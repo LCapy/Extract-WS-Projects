@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>ICU Validator Interface</h1>
+    <h1>ICU Validator</h1>
     <form id="upload-form">
         <label for="token-input">Enter Token:</label>
         <input type="text" id="token-input" placeholder="Enter your token here" required>
@@ -22,58 +22,14 @@
 
     <div id="status-message"></div>
 
-    <script src="html2canvas.min.js"></script>
-    <script src="jspdf.umd.min.js"></script>
-    <script src="jszip.min.js"></script>
-    <script src="xlsx.full.min.js"></script>
-    <script src="validador.js"></script>
-    <script>
-        document.getElementById("upload-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
+    <!-- Required Library Scripts -->
+    <script src="libs/html2canvas.min.js"></script>
+    <script src="libs/jspdf.umd.min.js"></script>
+    <script src="libs/jszip.min.js"></script>
+    <script src="libs/xlsx.full.min.js"></script>
 
-            const token = document.getElementById("token-input").value.trim();
-            const cookiesFile = document.getElementById("cookies-file").files[0];
-
-            if (!token || !cookiesFile) {
-                alert("Please enter the token and upload the cookies file.");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = async function () {
-                const cookies = JSON.parse(reader.result);
-                const headers = { 'User-Agent': 'Mozilla/5.0' };
-                const url = `https://ws.corp.adobe.com/ws-legacy/assignments_projects?&token=${token}&navigationPanel=true`;
-
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'include'
-                });
-
-                if (response.ok) {
-                    const htmlContent = await response.text();
-                    // Call validador.js logic for extracting and exporting data
-                    extractAndDownloadData(htmlContent);
-                } else {
-                    document.getElementById("status-message").textContent = "Failed to retrieve data.";
-                }
-            };
-            reader.readAsText(cookiesFile);
-        });
-
-        function extractAndDownloadData(htmlContent) {
-            // Function logic for parsing, extracting, and creating the Excel file
-            const projectsData = extractProjectsData(htmlContent); // Using the function from validador.js
-
-            if (projectsData.length > 0) {
-                generateExcelFile(projectsData);
-                alert("Report generated successfully!");
-            } else {
-                alert("No projects data found.");
-            }
-        }
-    </script>
+    <!-- Custom Script -->
+    <script src="exporter.js"></script>
 </body>
 
 </html>
